@@ -1,0 +1,125 @@
+/* Add styles here */
+:root {
+    --background-color: #f3f4f6; /* Tailwind gray-100 */
+    --blue-gradient-start: #60a5fa; /* Tailwind blue-400 */
+    --blue-gradient-end: #3b82f6;   /* Tailwind blue-500 */
+    --green-gradient-start: #4ade80; /* Tailwind green-400 */
+    --green-gradient-end: #22c55e;   /* Tailwind green-500 */
+    --gray-gradient-start: #d1d5db;  /* Tailwind gray-300 */
+    --gray-gradient-end: #9ca3af;    /* Tailwind gray-400 */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --blue-glow: rgba(59, 130, 246, 0.5);
+    --green-glow: rgba(34, 197, 94, 0.5);
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif; /* Use Poppins with sans-serif fallback */
+    background-color: var(--background-color);
+    margin: 0; /* Remove default body margin */
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent body scroll */
+  }
+  
+  button {
+    border: none;
+    border-radius: 9999px; /* Full rounded */
+    padding: 0.75rem 1.5rem; /* px-6 py-3 */
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 600; /* semi-bold */
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+  }
+  
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Tailwind shadow */
+    padding: 1rem 1.5rem; /* px-6 py-4 */
+  }
+  
+  h1 {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 600; /* semi-bold for headings */
+  }
+  #centerBtn {
+    background: linear-gradient(to bottom right, var(--gray-gradient-start), var(--gray-gradient-end));
+    color: #374151; /* Tailwind gray-700 */
+  }
+  
+  #connectBtn {
+    background: linear-gradient(to bottom right, var(--blue-gradient-start), var(--blue-gradient-end));
+  }
+  
+  #startBtn {
+    background: linear-gradient(to bottom right, var(--green-gradient-start), var(--green-gradient-end));
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px -1px var(--shadow-color), 0 4px 6px -1px var(--shadow-color);
+  }
+  
+  #connectBtn:hover {
+      box-shadow: 0 6px 10px -1px var(--shadow-color), 0 4px 6px -1px var(--shadow-color), 0 0 15px var(--blue-glow);
+  }
+  
+  #startBtn:hover {
+      box-shadow: 0 6px 10px -1px var(--shadow-color), 0 4px 6px -1px var(--shadow-color), 0 0 15px var(--green-glow);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+  
+/* --- Code Editor Styles --- */
+.code-editor-container {
+  position: relative;
+  flex: 1;
+  overflow: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Common styles for both the syntax highlighter and the textarea */
+.code-editor-pre,
+.code-editor-textarea {
+  padding: 1rem;
+  margin: 0;
+  border: 0;
+  outline: none;
+  white-space: pre-wrap; /* Allow wrapping */
+  word-wrap: break-word;  /* Break long words */
+
+  /* These font styles MUST be identical! */
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* The actual text area where the user types */
+.code-editor-textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: transparent; /* Makes the actual text invisible */
+  caret-color: white; /* But keeps the cursor visible */
+  resize: none;
+  box-sizing: border-box; /* Ensures padding is included in width/height */
+}

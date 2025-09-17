@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tello Drone Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/filo.css">
+</head>
+<body>
+    <div class="top-bar">
+        <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> Back to Blockly</a>
+    </div>
+    <div class="video-container">
+        <img src="{{ url_for('video_feed') }}" width="100%">
+    </div>
+
+    <div class="control-container">
+        <div id="joystick-left" class="joystick-zone"></div>
+        <div class="telemetry">
+            <div class="telemetry-item">
+                <i class="fas fa-battery-full"></i>
+                <span id="battery-level">--%</span>
+            </div>
+            <div class="telemetry-item">
+                <i class="fas fa-arrows-alt-v"></i>
+                <span id="altitude">--m</span>
+            </div>
+            <div class="telemetry-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span id="speed">--km/h</span>
+            </div>
+        </div>
+        <div id="joystick-right" class="joystick-zone"></div>
+    </div>
+
+    <div class="flight-controls">
+        <button id="takeoff-button">Takeoff</button>
+        <button id="land-button">Land</button>
+        <button id="return-home-button">Return to Home</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
+    <script src="/static/filo.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Robotix Japan Education</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+  <script src="https://unpkg.com/blockly/msg/js/en.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  
+ 
+  <body class="bg-gray-100 h-screen flex flex-col">
+  
+  <!-- Top bar -->
+  <header class="flex items-center justify-between bg-white shadow px-6 py-4">
+    <h1 class="text-xl font-bold">Robotix Japan</h1>
+        <a href="/filo" class="text-lg font-bold text-blue-500 hover:underline">Manual Control</a>
+
+    <div class="flex items-center space-x-4">
+      <button id="centerBtn" class="p-3 bg-gray-200 hover:bg-gray-300 rounded-full text-lg">🌀</button>
+      <button id="startBtn" class="p-3 bg-green-500 hover:bg-green-600 text-white rounded-full text-lg">▶ Start</button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-1 flex overflow-hidden">
+    <!-- Blockly workspace -->
+    <div id="blocklyDiv" style="width: 70%"></div>
+
+    <!-- Python code panel -->
+   <div id="codePanel" class="w-[30%] bg-[#2d2d2d] text-white flex flex-col">
+  <div class="flex justify-between items-center bg-[#1e1e1e] px-4 py-2 border-b border-gray-700">
+    <span class="text-sm">Python Code</span>
+    <button id="generateBtn" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded">
+      Generate
+    </button>
+    <button id="loadBlocks" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded">
+      Load
+    </button>
+  </div>
+  <textarea id="codeEditor"></textarea>
+</div>
+
+
+  </main>
+
+  <!-- Toolbox -->
+  <xml id="toolbox" style="display: none">
+
+    <!-- MOTION -->
+    <category name="Motion" colour="#4CAF50">
+      <block type="takeoff"></block>
+      <block type="land"></block>
+      <block type="stop"></block>
+      <block type="emergency"></block>
+      <block type="up"></block>
+      <block type="down"></block>
+      <block type="forward"></block>
+      <block type="back"></block>
+      <block type="left"></block>
+      <block type="right"></block>
+      <block type="rotate_cw"></block>
+      <block type="rotate_ccw"></block>
+      <block type="flip_front"></block>
+      <block type="flip_back"></block>
+      <block type="flip_left"></block>
+      <block type="flip_right"></block>
+      <block type="setspeed"></block>
+      <block type="go"></block>
+      <block type="curve"></block>
+    </category>
+  
+    <!-- CONTROL -->
+    <category name="Control" colour="#FF9800">
+      <block type="controls_if"></block>
+      <block type="controls_repeat_ext"></block>
+      <block type="controls_whileUntil"></block>
+      <block type="controls_for"></block>
+      <block type="controls_flow_statements"></block>
+      <block type="wait_seconds"></block>
+    </category>
+  
+    <!-- LIGHT -->
+    <category name="Light" colour="#E91E63">
+      <block type="led_color"></block>
+      <block type="led_rgb"></block>
+      <block type="led_breathe"></block>
+      <block type="led_flash"></block>
+    </category>
+  
+    <!-- OPERATOR -->
+    <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+    </category>
+
+    <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+    </category>
+
+    <category name="Math" colour="%{BKY_MATH_HUE}">
+      <block type="math_number">
+        <field name="NUM">123</field>
+      </block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+    </category>
+
+    <category name="Text" colour="%{BKY_TEXTS_HUE}">
+      <block type="text"></block>
+      <block type="text_length"></block>
+      <block type="text_print"></block>
+    </category>
+
+  
+    <!-- VARIABLES -->
+    <category name="Variables" custom="VARIABLE" colour="%{BKY_VARIABLES_HUE}"></category>
+  
+    <!-- SENSING -->
+    <category name="Sensing" colour="#9C27B0">
+      <block type="battery_level"></block>
+      <block type="wifi_signal"></block>
+      <block type="altitude"></block>
+    </category>
+  
+  </xml>
+
+<script src="/static/blockwitharray.js"></script>  
+  <script src="/static/generatorspy.js"></script>
+<script src="/static/main.js"></script>
+
+</body>
+</html>
