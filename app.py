@@ -9,7 +9,6 @@ app = Flask(__name__)
  
  
 # 🎥 Camera setup
-camera = cv2.VideoCapture(0, cv2.CAP_V4L2)
 
 # 🔌 Arduino serial setup (adjust COM port & baudrate)
 try:
@@ -25,6 +24,8 @@ except Exception as e:
     arduino = None
 
 def generate_frames():
+    camera = cv2.VideoCapture(0, cv2.CAP_V4L2)
+
     while True:
         success, frame = camera.read()
         if not success:
