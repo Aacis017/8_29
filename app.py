@@ -22,31 +22,66 @@ except Exception as e:
     arduino = None
 
 
-# 🎥 Cross-platform camera setup
 def get_camera():
+    """
+    Try several ways to open the camera on Raspberry Pi/Linux.
+    Returns an opened cv2.VideoCapture or None.
+    """
     if os.name == "nt":  # Windows
-        return cv2.VideoCapture(0)  # default DirectShow backend
-    else:  # Raspberry Pi/Linux
-        return cv2.VideoCapture(0, cv2.CAP_V4L2)  # V4L2 backend
+        cam = cv2.VideoCapture(0)
+        return cam
+
+    # On Raspberry Pi / Linux try several strategies
+    attempts = [
+        ("cv2.CAP_V4L2 index 0", lambda: cv2.VideoCapture(0, cv2.CAP_V4L2)),
+        ("/dev/video0 path + CAP_V4L2", lambda: cv2.VideoCapture("/dev/video0", cv2.CAP_V4L2)),
+        ("cv2 default backend index 0", lambda: cv2.VideoCapture(0)),
+        ("GStreamer libcamerasrc (if OpenCV built with GStreamer)",
+         lambda: cv2.VideoCapture(
+             "libcamerasrc ! video/x-raw, width=640, height=480, framerate=30/1 ! videoconvert ! appsink",
+             cv2.CAP_GSTREAMER))
+    ]
+
+    for desc, creator in attempts:
+        try:
+            print(f"Trying camera open method: {desc}")
+            cam = creator()
+            # small delay to allow backend to initialize
+            time.sleep(0.5)
+            if cam is not None and cam.isOpened():
+                print(f"✅ Camera opened using: {desc}")
+                return cam
+            # ensure we release invalid handles
+            try:
+                cam.release()
+            except Exception:
+                pass
+        except Exception as e:
+            print(f"Attempt '{desc}' failed: {e}")
+
+    print("❌ All camera open attempts failed. Camera not detected via OpenCV V4L2/GStreamer.")
+    return None
 
 
 def generate_frames():
     camera = get_camera()
-    if not camera.isOpened():
-        print("❌ Camera not detected")
+    if not camera:
+        print("❌ Camera not detected — generate_frames will stop. See troubleshooting notes.")
         return
 
     while True:
         success, frame = camera.read()
-        if not success:
-            print("❌ Failed to grab frame")
+        if not success or frame is None:
+            print("❌ Failed to grab frame, retrying in 0.5s")
+            time.sleep(0.5)
             continue
         ret, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
+        if not ret:
+            print("❌ cv2.imencode failed, skipping frame")
+            continue
+        frame_bytes = buffer.tobytes()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(),
