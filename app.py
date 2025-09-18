@@ -64,24 +64,85 @@ def get_camera():
 
 
 def generate_frames():
-    camera = get_camera()
-    if not camera:
-        print("❌ Camera not detected — generate_frames will stop. See troubleshooting notes.")
-        return
-
+    """
+    Robust frame generator:
+    - Repeatedly tries to open the camera via get_camera()
+    - Warms up the camera (grab a few frames)
+    - Uses grab()/retrieve() to avoid some backend read issues
+    - If multiple consecutive failures occur, release and re-open
+    """
     while True:
-        success, frame = camera.read()
-        if not success or frame is None:
-            print("❌ Failed to grab frame, retrying in 0.5s")
-            time.sleep(0.5)
+        camera = get_camera()
+        if not camera:
+            print("❌ Camera not detected — retrying in 2s")
+            time.sleep(2)
             continue
-        ret, buffer = cv2.imencode('.jpg', frame)
-        if not ret:
-            print("❌ cv2.imencode failed, skipping frame")
-            continue
-        frame_bytes = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+        # Try to set common properties (may be ignored depending on backend)
+        try:
+            camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+            camera.set(cv2.CAP_PROP_FPS, 30)
+            print("Camera props:", {
+                "opened": camera.isOpened(),
+                "width": camera.get(cv2.CAP_PROP_FRAME_WIDTH),
+                "height": camera.get(cv2.CAP_PROP_FRAME_HEIGHT),
+                "fps": camera.get(cv2.CAP_PROP_FPS)
+            })
+        except Exception as e:
+            print("Warning setting camera props:", e)
+
+        # Warm up
+        for i in range(5):
+            try:
+                camera.grab()
+            except Exception:
+                pass
+            time.sleep(0.05)
+
+        consecutive_failures = 0
+        try:
+            while True:
+                # Use grab/retrieve to be more compatible with some V4L2 backends
+                ok_grab = camera.grab()
+                if not ok_grab:
+                    consecutive_failures += 1
+                    print("❌ grab() failed (count):", consecutive_failures)
+                else:
+                    ok, frame = camera.retrieve()
+                    if not ok or frame is None:
+                        consecutive_failures += 1
+                        print("❌ retrieve() failed (count):", consecutive_failures)
+                    else:
+                        consecutive_failures = 0
+                        ret, buffer = cv2.imencode('.jpg', frame)
+                        if not ret:
+                            print("❌ cv2.imencode failed, skipping frame")
+                            continue
+                        frame_bytes = buffer.tobytes()
+                        yield (b'--frame\r\n'
+                               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+                # If failures keep happening, reopen camera
+                if consecutive_failures >= 5:
+                    print("❌ Too many consecutive failures, releasing and reopening camera")
+                    try:
+                        camera.release()
+                    except Exception:
+                        pass
+                    break
+
+                # small pause to avoid tight loop on failure
+                time.sleep(0.02)
+        except Exception as e:
+            print("Exception in generate_frames loop:", e)
+        finally:
+            try:
+                camera.release()
+            except Exception:
+                pass
+        # wait a bit before trying to re-open
+        time.sleep(1)
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(),
